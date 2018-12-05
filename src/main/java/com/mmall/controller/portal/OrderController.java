@@ -48,10 +48,14 @@ public class OrderController {
 		String path = request.getSession().getServletContext().getRealPath("upload");
 		return iOrderService.pay(orderNo, user.getId(), path);
 	}
-	
+	/**
+	 * 支付宝回调
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping("alipay_call_back.do")
 	@ResponseBody
-	public ServerResponse alipayCallBack(HttpServletRequest request){
+	public Object alipayCallBack(HttpServletRequest request){
 		Map<String, String> params = Maps.newHashMap();
 		
 		Map requestParams = request.getParameterMap();
@@ -73,5 +77,27 @@ public class OrderController {
 		} catch (AlipayApiException e) {
 			logger.error("支付宝回调异常", e);
 		}
+		
+		//TODO 验证各种数据
+		
+		ServerResponse serverResponse = iOrderService.alipayCallback(params);
+		if(serverResponse.isSuccess()){
+			return Const.AlipayCallBack.RESPONSE_SUCCESS;
+		}
+		return Const.AlipayCallBack.RESPONSE_FAILED;
+	}
+	
+	@RequestMapping("query_order_pay_status.do")
+	@ResponseBody
+	public ServerResponse<Boolean> queryOrderPayStatus(HttpSession session, Long orderNo){
+		User user = (User) session.getAttribute(Const.CURRENT_USER);
+		if(user == null){
+			return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), ResponseCode.NEED_LOGIN.getDesc());
+		}
+		ServerResponse serverResponse = iOrderService.queryOrderPayStatus(user.getId(), orderNo);
+		if(serverResponse.isSuccess()){
+			return ServerResponse.createBySuccess(true);
+		}
+		return ServerResponse.createBySuccess(false);
 	}
 }
