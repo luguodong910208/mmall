@@ -86,7 +86,12 @@ public class OrderController {
 		}
 		return Const.AlipayCallBack.RESPONSE_FAILED;
 	}
-	
+	/**
+	 * 查看订单付款状态
+	 * @param session
+	 * @param orderNo
+	 * @return
+	 */
 	@RequestMapping("query_order_pay_status.do")
 	@ResponseBody
 	public ServerResponse<Boolean> queryOrderPayStatus(HttpSession session, Long orderNo){
