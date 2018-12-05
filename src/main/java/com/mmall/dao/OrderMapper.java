@@ -1,5 +1,7 @@
 package com.mmall.dao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.mmall.pojo.Order;
 
 public interface OrderMapper {
@@ -14,4 +16,6 @@ public interface OrderMapper {
     int updateByPrimaryKeySelective(Order record);
 
     int updateByPrimaryKey(Order record);
+    
+    Order selectByUserIdAndOrderNo(@Param("userId") Integer userId, @Param("orderNo") Long orderNo);
 }
